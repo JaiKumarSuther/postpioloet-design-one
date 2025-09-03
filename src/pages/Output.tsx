@@ -4,11 +4,20 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Suspense } from "react";
 import ThreeBackground from "@/components/ThreeBackground";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 const Output = () => {
   const location = useLocation();
   const { toast } = useToast();
   const state = location.state as any;
+  const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   const blogContent = `# The Future of AI in Content Creation: Transforming Digital Marketing
 
@@ -72,24 +81,39 @@ The key to success lies in finding the right balance between AI automation and h
   };
 
   const handlePublish = () => {
-    toast({ title: "Publishing Blog", description: "Your blog post is being published to your connected platforms." });
+    setOpen(true);
+  };
+
+  const handleSubmitContact = () => {
+    if (!email || !phone) {
+      toast({ title: "Missing details", description: "Please enter your email and contact number.", variant: "destructive" });
+      return;
+    }
+    setOpen(false);
+    setEmail("");
+    setPhone("");
+    setConfirmOpen(true);
   };
 
   const handleSendToWebsite = () => {
     toast({ title: "Sending to Website", description: "Content is being sent to your website CMS." });
   };
 
+  const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
   return (
-    <div className="min-h-screen relative overflow-hidden pt-20 pb-16">
+    <div className={`min-h-screen relative overflow-hidden pt-20 pb-16${isLocalhost ? ' bg-black' : ''}`}>
       {/* Animated Three.js background */}
-      <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
-        <ThreeBackground />
-      </Suspense>
+      {!isLocalhost && (
+        <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
+          <ThreeBackground />
+        </Suspense>
+      )}
 
       {/* Subtle overlays */}
-      <div className="absolute inset-0 bg-gradient-glow opacity-60"></div>
-      <div className="absolute -top-28 -left-28 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
-      <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-purple-primary/10 rounded-full blur-3xl"></div>
+      {!isLocalhost && <div className="absolute inset-0 bg-gradient-glow opacity-60"></div>}
+      {!isLocalhost && <div className="absolute -top-28 -left-28 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>}
+      {!isLocalhost && <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-purple-primary/10 rounded-full blur-3xl"></div>}
 
       <div className="container mx-auto px-6 max-w-6xl relative">
         <div className="flex items-center justify-between mb-8 animate-fade-in">
@@ -99,7 +123,6 @@ The key to success lies in finding the right balance between AI automation and h
               Back to Writer
             </Link>
             <div className="h-6 w-px bg-border"></div>
-            <img src="/assets/postpilot-logo.png" alt="PostPilot.AI" className="w-40 rounded" />
             <h1 className="text-3xl font-bold">Your <span className="gradient-text">AI-Generated</span> Blog</h1>
           </div>
           <div className="hidden md:flex items-center gap-2 text-xs">
@@ -204,9 +227,45 @@ The key to success lies in finding the right balance between AI automation and h
         </div>
       </div>
 
-      <div className="hidden md:flex items-center gap-2 fixed bottom-6 right-6 px-3 py-2 rounded-full bg-primary/15 text-primary text-xs shadow-glow">
+      <div className="hidden md:flex items-center gap-2 fixed bottom-6 right-6 px-3 py-2 rounded-full bg-primary/15 text-primary text-xs shadow-glow ">
         <Sparkles className="w-4 h-4" /> Tip: Use the buttons on the right to export
       </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Publish Blog Post</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Contact Number</Label>
+              <Input id="phone" type="tel" placeholder="e.g. +1 555 123 4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setOpen(false)} variant="outline">Cancel</Button>
+            <Button onClick={handleSubmitContact}>Submit</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Request Received</AlertDialogTitle>
+            <AlertDialogDescription>
+              R Tech Team will react you soon to integrate this blog to your website
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex justify-end">
+            <AlertDialogAction onClick={() => setConfirmOpen(false)}>OK</AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

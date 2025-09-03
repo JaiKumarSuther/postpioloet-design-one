@@ -21,6 +21,7 @@ const BlogWriter = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
+  const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -93,16 +94,18 @@ const BlogWriter = () => {
   const optionCardBase = "flex items-center space-x-3 p-4 rounded-xl border transition-all bg-card/40 cursor-pointer";
 
   return (
-    <div className="min-h-screen relative overflow-hidden pt-20 pb-16">
+    <div className={`min-h-screen relative overflow-hidden pt-20 pb-16${isLocalhost ? ' bg-black' : ''}`}>
       {/* Animated Three.js background */}
-      <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
-        <ThreeBackground />
-      </Suspense>
+      {!isLocalhost && (
+        <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
+          <ThreeBackground />
+        </Suspense>
+      )}
 
-      {/* Subtle animated overlays */}
-      <div className="absolute inset-0 bg-gradient-glow opacity-60"></div>
-      <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
-      <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-primary/10 rounded-full blur-3xl"></div>
+      {/* Subtle animated overlays (behind content) */}
+      {!isLocalhost && <div className="absolute inset-0 bg-gradient-glow opacity-60 -z-10"></div>}
+      {!isLocalhost && <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10"></div>}
+      {!isLocalhost && <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-primary/10 rounded-full blur-3xl -z-10"></div>}
 
       <div className="container mx-auto px-6 max-w-4xl relative">
         <div className="flex items-center justify-between mb-6 animate-fade-in">

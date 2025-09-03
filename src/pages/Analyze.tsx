@@ -76,6 +76,7 @@ const Analyze = () => {
   const params = new URLSearchParams(location.search);
   const targetUrlRaw = params.get("url") || "";
   const targetUrl = normalizeUrl(targetUrlRaw);
+  const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
   const hostname = (() => {
     try {
       const u = new URL(targetUrl);
@@ -130,20 +131,24 @@ const Analyze = () => {
   const currentStepData = analysisSteps[currentStep];
 
   return (
-    <div className="min-h-[80vh] relative overflow-hidden flex items-center justify-center p-3 md:p-4">
+    <div className={`min-h-[80vh] relative overflow-hidden flex items-center justify-center p-3 md:p-4${isLocalhost ? ' bg-black' : ''}`}>
       {/* Animated Three.js background */}
-      <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
-        <ThreeBackground />
-      </Suspense>
+      {!isLocalhost && (
+        <>
+          <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
+            <ThreeBackground />
+          </Suspense>
 
-      <div className="absolute inset-0 bg-gradient-glow opacity-30"></div>
-      <div className="absolute inset-0 bg-gradient-mesh opacity-20"></div>
+          <div className="absolute inset-0 bg-gradient-glow opacity-30"></div>
+          <div className="absolute inset-0 bg-gradient-mesh opacity-20"></div>
+        </>
+      )}
 
-      {Array.from({ length: 8 }).map((_, i) => (
+      {!isLocalhost && Array.from({ length: 8 }).map((_, i) => (
         <FloatingParticle key={i} delay={i * 0.6} />
       ))}
 
-      <div className="relative w-full max-w-3xl opacity-60">
+      <div className="relative w-full max-w-3xl">
         <div className="absolute -top-16 -left-16 w-28 h-28 bg-purple-primary/15 rounded-full blur-3xl animate-pulse-glow"></div>
         <div className="absolute -bottom-16 -right-16 w-40 h-40 bg-purple-secondary/10 rounded-full blur-3xl animate-float"></div>
 
