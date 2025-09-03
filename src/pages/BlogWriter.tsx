@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Globe, Lightbulb, TrendingUp, ArrowRight, ArrowLeft } from "lucide-react";
+import { Globe, Lightbulb, TrendingUp, ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -96,32 +96,75 @@ const BlogWriter = () => {
     }, 2000);
   };
 
+  const hostname = (() => {
+    try {
+      const u = new URL(websiteUrl);
+      return u.hostname.replace("www.", "");
+    } catch {
+      return websiteUrl;
+    }
+  })();
+
+  const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, value: string) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setSelectedOption(value);
+    }
+  };
+
   return (
-    <div className="min-h-screen pt-20 pb-16">
-      <div className="container mx-auto px-6 max-w-4xl">
-        <div className="flex items-center gap-4 mb-8 animate-fade-in">
-          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-            Back to Home
-          </Link>
-          <div className="h-6 w-px bg-border"></div>
-          <div className="flex items-center gap-3">
-            <img src="/assets/postpilot-logo.png" alt="PostPilot.AI" className="w-40 rounded" />
-  
+    <div className="min-h-screen relative overflow-hidden pt-20 pb-16">
+      {/* Subtle animated background */}
+      <div className="absolute inset-0 bg-gradient-glow opacity-40"></div>
+      <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-primary/10 rounded-full blur-3xl"></div>
+
+      <div className="container mx-auto px-6 max-w-4xl relative">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 animate-fade-in">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+              Back to Home
+            </Link>
           </div>
+          <img src="/assets/postpilot-logo.png" alt="PostPilot.AI" className="w-40 rounded" />
         </div>
 
-        <div className="text-center mb-12 animate-fade-in">
-          <p className="text-xl text-muted-foreground">
-            Tell us what you want to write about, and our AI will create engaging content for you
-          </p>
+        {/* Compact stepper */}
+        <div className="flex items-center justify-center gap-3 mb-6 text-xs font-medium">
+          <span className="px-2 py-1 rounded-full bg-gradient-primary text-black">1. Analyze</span>
+          <div className="w-6 h-0.5 bg-border"></div>
+          <span className="px-2 py-1 rounded-full bg-primary/15 text-primary">2. Write</span>
+          <div className="w-6 h-0.5 bg-border"></div>
+          <span className="px-2 py-1 rounded-full bg-muted text-muted-foreground">3. Output</span>
         </div>
 
-        <div className="card-gradient rounded-2xl p-8 mb-8 animate-fade-in">
+        {/* Eyebrow + target chip */}
+        <div className="text-center mb-6 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary">
+            <Sparkles className="w-4 h-4" />
+            Guided mode
+          </div>
+          {selectedOption === "website" && hostname && (
+            <div className="mt-3 text-xs md:text-sm text-purple-primary bg-purple-primary/10 border border-purple-primary/20 rounded-full inline-flex px-3 py-1">
+              Target: {hostname}
+            </div>
+          )}
+        </div>
+
+        {/* Main card */}
+        <div className="card-gradient rounded-2xl p-8 mb-8 animate-fade-in shadow-glow">
           <div className="mb-8">
             <Label className="text-lg font-semibold mb-4 block">Write blog on basis of:</Label>
             <RadioGroup value={selectedOption} onValueChange={setSelectedOption} className="space-y-4">
-              <div className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary transition-colors">
+              <div
+                className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary transition-colors bg-card/40 cursor-pointer"
+                onClick={() => setSelectedOption("website")}
+                onKeyDown={(e) => handleCardKeyDown(e, "website")}
+                role="button"
+                tabIndex={0}
+              >
                 <RadioGroupItem value="website" id="website" />
                 <Globe className="w-5 h-5 text-primary" />
                 <Label htmlFor="website" className="cursor-pointer flex-1">
@@ -132,7 +175,13 @@ const BlogWriter = () => {
                 </Label>
               </div>
 
-              <div className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary transition-colors">
+              <div
+                className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary transition-colors bg-card/40 cursor-pointer"
+                onClick={() => setSelectedOption("custom")}
+                onKeyDown={(e) => handleCardKeyDown(e, "custom")}
+                role="button"
+                tabIndex={0}
+              >
                 <RadioGroupItem value="custom" id="custom" />
                 <Lightbulb className="w-5 h-5 text-primary" />
                 <Label htmlFor="custom" className="cursor-pointer flex-1">
@@ -143,7 +192,13 @@ const BlogWriter = () => {
                 </Label>
               </div>
 
-              <div className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary transition-colors">
+              <div
+                className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary transition-colors bg-card/40 cursor-pointer"
+                onClick={() => setSelectedOption("trending")}
+                onKeyDown={(e) => handleCardKeyDown(e, "trending")}
+                role="button"
+                tabIndex={0}
+              >
                 <RadioGroupItem value="trending" id="trending" />
                 <TrendingUp className="w-5 h-5 text-primary" />
                 <Label htmlFor="trending" className="cursor-pointer flex-1">
@@ -185,15 +240,23 @@ const BlogWriter = () => {
 
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <div>
-              <Label htmlFor="region" className="block mb-2 font-semibold">
-                Region <span className="text-sm text-muted-foreground">(Optional)</span>
-              </Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="region" className="font-semibold">Region</Label>
+                <span className="text-xs text-muted-foreground">(Optional)</span>
+              </div>
               <Select value={region} onValueChange={setRegion}>
                 <SelectTrigger className="bg-input border-border">
                   <SelectValue placeholder="Select region" />
                 </SelectTrigger>
                 <SelectContent>
-                  {["Global","North America","Europe","Asia Pacific","Latin America","Middle East & Africa"].map((r) => (
+                  {[
+                    "Global",
+                    "North America",
+                    "Europe",
+                    "Asia Pacific",
+                    "Latin America",
+                    "Middle East & Africa",
+                  ].map((r) => (
                     <SelectItem key={r} value={r}>{r}</SelectItem>
                   ))}
                 </SelectContent>
@@ -201,13 +264,29 @@ const BlogWriter = () => {
             </div>
 
             <div>
-              <Label htmlFor="category" className="block mb-2 font-semibold">Domain Category</Label>
+              <div className="flex items-center justify-between mb-2">
+                <Label htmlFor="category" className="font-semibold">Domain Category</Label>
+                <span className="text-xs opacity-0">(Optional)</span>
+              </div>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="bg-input border-border">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {["Technology","Business","Health & Fitness","Finance","Education","Entertainment","Travel","Food & Lifestyle","Sports","Politics","E-commerce","Marketing"].map((cat) => (
+                  {[
+                    "Technology",
+                    "Business",
+                    "Health & Fitness",
+                    "Finance",
+                    "Education",
+                    "Entertainment",
+                    "Travel",
+                    "Food & Lifestyle",
+                    "Sports",
+                    "Politics",
+                    "E-commerce",
+                    "Marketing",
+                  ].map((cat) => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}
                 </SelectContent>

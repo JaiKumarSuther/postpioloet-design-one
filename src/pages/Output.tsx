@@ -78,8 +78,13 @@ The key to success lies in finding the right balance between AI automation and h
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
-      <div className="container mx-auto px-6 max-w-6xl">
+    <div className="min-h-screen relative overflow-hidden pt-20 pb-16">
+      {/* Subtle background */}
+      <div className="absolute inset-0 bg-gradient-glow opacity-40"></div>
+      <div className="absolute -top-28 -left-28 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-purple-primary/10 rounded-full blur-3xl"></div>
+
+      <div className="container mx-auto px-6 max-w-6xl relative">
         <div className="flex items-center justify-between mb-8 animate-fade-in">
           <div className="flex items-center gap-4">
             <Link to="/blog-writer" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
@@ -88,9 +93,11 @@ The key to success lies in finding the right balance between AI automation and h
             </Link>
             <div className="h-6 w-px bg-border"></div>
             <img src="/assets/postpilot-logo.png" alt="PostPilot.AI" className="w-40 rounded" />
-            <h1 className="text-3xl font-bold">
-              Your <span className="gradient-text">AI-Generated</span> Blog
-            </h1>
+            <h1 className="text-3xl font-bold">Your <span className="gradient-text">AI-Generated</span> Blog</h1>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-xs">
+            <span className="px-2 py-1 bg-primary/15 text-primary rounded-full">Draft</span>
+            <span className="px-2 py-1 bg-purple-primary/15 text-purple-primary rounded-full">SEO 92</span>
           </div>
         </div>
 
@@ -102,7 +109,7 @@ The key to success lies in finding the right balance between AI automation and h
         </div>
 
         {state && (
-          <div className="card-gradient rounded-xl p-6 mb-8 animate-fade-in">
+          <div className="card-gradient rounded-xl p-6 mb-8 animate-fade-in shadow-glow">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-primary" />
               <h3 className="text-lg font-semibold">Generation Details</h3>
@@ -152,7 +159,7 @@ The key to success lies in finding the right balance between AI automation and h
 
         <div className="grid lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
-            <div className="card-gradient rounded-2xl p-8 animate-fade-in">
+            <div className="card-gradient rounded-2xl p-8 animate-fade-in shadow-glow">
               <div className="prose prose-invert max-w-none">
                 <div className="text-foreground leading-relaxed" style={{ whiteSpace: 'pre-line' }}>{blogContent}</div>
               </div>
@@ -160,7 +167,7 @@ The key to success lies in finding the right balance between AI automation and h
           </div>
 
           <div className="lg:col-span-1">
-            <div className="card-gradient rounded-2xl p-6 sticky top-24 animate-fade-in">
+            <div className="card-gradient rounded-2xl p-6 sticky top-24 animate-fade-in shadow-glow">
               <h3 className="text-lg font-semibold mb-6">Quick Actions</h3>
               <div className="space-y-4">
                 <Button onClick={handleCopy} variant="outline" className="w-full justify-start border-border hover:border-primary hover:bg-primary/10">
@@ -188,6 +195,11 @@ The key to success lies in finding the right balance between AI automation and h
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Floating helper badge */}
+      <div className="hidden md:flex items-center gap-2 fixed bottom-6 right-6 px-3 py-2 rounded-full bg-primary/15 text-primary text-xs shadow-glow">
+        <Sparkles className="w-4 h-4" /> Tip: Use the buttons on the right to export
       </div>
     </div>
   );
