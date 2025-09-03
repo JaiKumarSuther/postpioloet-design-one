@@ -30,3 +30,19 @@ export function normalizeUrl(raw: string): string {
     return trimmed;
   }
 }
+
+// Validates whether a user-entered string can be a proper HTTP(S) URL.
+// This is intentionally permissive with inputs like "example.com" or "www.example.com",
+// but rejects malformed strings and unsupported schemes.
+export function isValidHttpUrl(input: string): boolean {
+  if (!input) return false;
+  try {
+    const candidate = normalizeUrl(input);
+    const url = new URL(candidate);
+    const isHttp = url.protocol === "http:" || url.protocol === "https:";
+    const hasTldLikeHost = /[a-zA-Z0-9-]+\.[a-zA-Z]{2,}/.test(url.hostname);
+    return isHttp && hasTldLikeHost;
+  } catch {
+    return false;
+  }
+}

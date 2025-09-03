@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import ThreeBackground from "@/components/ThreeBackground";
-import { normalizeUrl } from "@/lib/utils";
+import { normalizeUrl, isValidHttpUrl } from "@/lib/utils";
 
 const BlogWriter = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -18,6 +18,7 @@ const BlogWriter = () => {
   const [region, setRegion] = useState("");
   const [category, setCategory] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [errors, setErrors] = useState<{ selectedOption?: string; websiteUrl?: string; customTopic?: string; selectedTrend?: string }>({});
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
@@ -45,24 +46,49 @@ const BlogWriter = () => {
     "Green Energy Transition",
   ];
 
-  const handleSubmit = () => {
-    if (!selectedOption) {
-      toast({ title: "Selection Required", description: "Please select a blog writing option.", variant: "destructive" });
-      return;
-    }
-    if (selectedOption === "website" && !websiteUrl) {
-      toast({ title: "URL Required", description: "Please enter a website URL.", variant: "destructive" });
-      return;
-    }
-    if (selectedOption === "custom" && !customTopic) {
-      toast({ title: "Topic Required", description: "Please enter a custom topic.", variant: "destructive" });
-      return;
-    }
-    if (selectedOption === "trending" && !selectedTrend) {
-      toast({ title: "Topic Required", description: "Please select a trending topic.", variant: "destructive" });
-      return;
-    }
+  const onSelectOption = (value: string) => {
+    setSelectedOption(value);
+    // Clear unrelated fields and errors when switching type
+    if (value !== "website") setWebsiteUrl("");
+    if (value !== "custom") setCustomTopic("");
+    if (value !== "trending") setSelectedTrend("");
+    setErrors({});
+  };
 
+  const validate = (): boolean => {
+    const next: { selectedOption?: string; websiteUrl?: string; customTopic?: string; selectedTrend?: string } = {};
+    if (!selectedOption) next.selectedOption = "Please select a blog writing option.";
+    if (selectedOption === "website") {
+      if (!websiteUrl.trim()) next.websiteUrl = "Website URL is required.";
+      else if (!isValidHttpUrl(websiteUrl)) next.websiteUrl = "Enter a valid URL (e.g., example.com)";
+    }
+    if (selectedOption === "custom" && !customTopic.trim()) next.customTopic = "Please enter a topic.";
+    if (selectedOption === "trending" && !selectedTrend) next.selectedTrend = "Please select a trending topic.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const canSubmit = (() => {
+    if (!selectedOption) return false;
+    if (selectedOption === "website") return !!websiteUrl.trim() && isValidHttpUrl(websiteUrl);
+    if (selectedOption === "custom") return !!customTopic.trim();
+    if (selectedOption === "trending") return !!selectedTrend;
+    return false;
+  })();
+
+  const handleSubmit = () => {
+    const ok = validate();
+    if (!ok) {
+      const firstError =
+        errors.selectedOption ||
+        errors.websiteUrl ||
+        errors.customTopic ||
+        errors.selectedTrend;
+      if (firstError) {
+        toast({ title: "Fix validation errors", description: firstError, variant: "destructive" });
+      }
+      return;
+    }
     toast({ title: "Generating Blog", description: "AI is creating your blog post..." });
     setIsGenerating(true);
 
@@ -87,7 +113,7 @@ const BlogWriter = () => {
   const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>, value: string) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      setSelectedOption(value);
+      onSelectOption(value);
     }
   };
 
@@ -133,10 +159,10 @@ const BlogWriter = () => {
         <div className="card-gradient rounded-2xl p-8 mb-8 animate-fade-in shadow-glow">
           <div className="mb-8">
             <Label className="text-lg font-semibold mb-4 block">Write blog on basis of:</Label>
-            <RadioGroup value={selectedOption} onValueChange={setSelectedOption} className="space-y-4">
+            <RadioGroup value={selectedOption} onValueChange={onSelectOption} className="space-y-4">
               <div
                 className={`${optionCardBase} ${selectedOption === "website" ? "border-primary/60 shadow-glow" : "border-border hover:border-primary/50"}`}
-                onClick={() => setSelectedOption("website")}
+                onClick={() => onSelectOption("website")}
                 onKeyDown={(e) => handleCardKeyDown(e, "website")}
                 role="button"
                 tabIndex={0}
@@ -153,7 +179,7 @@ const BlogWriter = () => {
 
               <div
                 className={`${optionCardBase} ${selectedOption === "custom" ? "border-primary/60 shadow-glow" : "border-border hover:border-primary/50"}`}
-                onClick={() => setSelectedOption("custom")}
+                onClick={() => onSelectOption("custom")}
                 onKeyDown={(e) => handleCardKeyDown(e, "custom")}
                 role="button"
                 tabIndex={0}
@@ -170,7 +196,7 @@ const BlogWriter = () => {
 
               <div
                 className={`${optionCardBase} ${selectedOption === "trending" ? "border-primary/60 shadow-glow" : "border-border hover:border-primary/50"}`}
-                onClick={() => setSelectedOption("trending")}
+                onClick={() => onSelectOption("trending")}
                 onKeyDown={(e) => handleCardKeyDown(e, "trending")}
                 role="button"
                 tabIndex={0}
@@ -190,14 +216,30 @@ const BlogWriter = () => {
           {selectedOption === "website" && (
             <div className="mb-6 animate-slide-in">
               <Label htmlFor="url" className="block mb-2 font-semibold">Website URL</Label>
-              <Input id="url" type="text" placeholder="example.com or www.example.com" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="bg-card/40 border border-border hover:border-primary/50 focus:border-primary placeholder:text-muted-foreground" />
+              <Input
+                id="url"
+                type="text"
+                placeholder="example.com or www.example.com"
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                className={`bg-card/40 border ${errors.websiteUrl ? "border-red-500 focus:border-red-500" : "border-border hover:border-primary/50 focus:border-primary"} placeholder:text-muted-foreground`}
+              />
+              {errors.websiteUrl && <p className="mt-2 text-sm text-destructive">{errors.websiteUrl}</p>}
             </div>
           )}
 
           {selectedOption === "custom" && (
             <div className="mb-6 animate-slide-in">
               <Label htmlFor="topic" className="block mb-2 font-semibold">Custom Topic</Label>
-              <Input id="topic" type="text" placeholder="Enter your blog topic or idea..." value={customTopic} onChange={(e) => setCustomTopic(e.target.value)} className="bg-card/40 border border-border hover:border-primary/50 focus:border-primary placeholder:text-muted-foreground" />
+              <Input
+                id="topic"
+                type="text"
+                placeholder="Enter your blog topic or idea..."
+                value={customTopic}
+                onChange={(e) => setCustomTopic(e.target.value)}
+                className={`bg-card/40 border ${errors.customTopic ? "border-red-500 focus:border-red-500" : "border-border hover:border-primary/50 focus:border-primary"} placeholder:text-muted-foreground`}
+              />
+              {errors.customTopic && <p className="mt-2 text-sm text-destructive">{errors.customTopic}</p>}
             </div>
           )}
 
@@ -219,6 +261,7 @@ const BlogWriter = () => {
                   );
                 })}
               </div>
+              {errors.selectedTrend && <p className="mt-3 text-sm text-destructive">{errors.selectedTrend}</p>}
             </div>
           )}
 
@@ -258,7 +301,7 @@ const BlogWriter = () => {
             </div>
           </div>
 
-          <Button onClick={handleSubmit} disabled={isGenerating} className={`w-full button-gradient text-lg py-6 rounded-lg font-semibold text-primary-foreground transition-all ${isGenerating ? "opacity-80 cursor-not-allowed" : "hover:scale-105"}`}>
+          <Button onClick={handleSubmit} disabled={isGenerating || !canSubmit} className={`w-full button-gradient text-lg py-6 rounded-lg font-semibold text-primary-foreground transition-all ${isGenerating || !canSubmit ? "opacity-80 cursor-not-allowed" : "hover:scale-105"}`}>
             {isGenerating ? "Generating..." : "Generate Blog Post"} {!isGenerating && <ArrowRight className="w-5 h-5 ml-2" />}
           </Button>
         </div>
