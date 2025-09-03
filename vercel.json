@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "builds": [{ "src": "dist/**/*", "use": "@vercel/static" }],
+  "routes": [
+    { "src": "/assets/(.*)", "dest": "/dist/assets/$1" },
+    { "src": "/favicon.ico", "dest": "/dist/favicon.ico" },
+    { "src": "/robots.txt", "dest": "/dist/robots.txt" },
+    { "src": "/(.*)", "dest": "/dist/index.html" }
+  ]
+}
+
+
