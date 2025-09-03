@@ -4,18 +4,27 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { normalizeUrl } from '@/lib/utils'
+import { normalizeUrl, isValidHttpUrl } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 export default function HeroSection() {
   const [blogUrl, setBlogUrl] = useState('')
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!blogUrl) return
+    if (!blogUrl || !isValidHttpUrl(blogUrl)) {
+      setError('Enter a valid website URL (e.g., example.com)')
+      toast({ title: 'Invalid URL', description: 'Please enter a valid website URL.', variant: 'destructive' })
+      return
+    }
     const normalized = normalizeUrl(blogUrl)
     navigate(`/analyze?url=${encodeURIComponent(normalized)}`)
   }
+
+  const canSubmit = blogUrl.trim().length > 0 && isValidHttpUrl(blogUrl)
 
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
@@ -65,20 +74,29 @@ export default function HeroSection() {
             type="text"
             placeholder="Enter your blog or website URL"
             value={blogUrl}
-            onChange={(e) => setBlogUrl(e.target.value)}
-            className="flex-1 h-12 sm:h-14 text-base sm:text-lg glass-card border-glass-border bg-card/50 backdrop-blur-xl focus:border-primary/50 transition-all duration-300"
+            onChange={(e) => {
+              const val = e.target.value
+              setBlogUrl(val)
+              if (error && isValidHttpUrl(val)) setError('')
+            }}
+            className={`flex-1 h-12 sm:h-14 text-base sm:text-lg glass-card bg-card/50 backdrop-blur-xl transition-all duration-300 ${error ? 'border-red-500 focus:border-red-500' : 'border-glass-border focus:border-primary/50'}`}
             required
           />
           <Button 
             type="submit" 
             variant="hero"
             size="lg"
-            className="h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold group whitespace-nowrap"
+            disabled={!canSubmit}
+            className={`h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold group whitespace-nowrap ${!canSubmit ? 'opacity-80 cursor-not-allowed' : ''}`}
           >
             Get Started
             <ArrowRight className="ml-2 w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
         </motion.form>
+
+        {error && (
+          <p className="mt-2 text-sm text-destructive">{error}</p>
+        )}
 
         <motion.div
           initial={{ opacity: 0 }}

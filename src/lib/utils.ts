@@ -40,8 +40,27 @@ export function isValidHttpUrl(input: string): boolean {
     const candidate = normalizeUrl(input);
     const url = new URL(candidate);
     const isHttp = url.protocol === "http:" || url.protocol === "https:";
-    const hasTldLikeHost = /[a-zA-Z0-9-]+\.[a-zA-Z]{2,}/.test(url.hostname);
-    return isHttp && hasTldLikeHost;
+    if (!isHttp) return false;
+
+    const hostname = url.hostname.toLowerCase();
+    if (!hostname.includes(".")) return false; // must contain a dot somewhere
+
+    // Remove a leading www. for structural validation
+    const coreHost = hostname.replace(/^www\./i, "");
+    const parts = coreHost.split(".");
+    if (parts.length < 2) return false; // need at least domain + tld
+
+    const tld = parts[parts.length - 1];
+    // TLD should be letters only, reasonable length (2-24)
+    if (!/^[a-z]{2,24}$/.test(tld)) return false;
+
+    // Validate each DNS label: 1-63 chars, alnum with optional internal hyphens
+    const labelRegex = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i;
+    for (const label of parts) {
+      if (!labelRegex.test(label)) return false;
+    }
+
+    return true;
   } catch {
     return false;
   }
