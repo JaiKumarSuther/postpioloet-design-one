@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PostPilot AI - Dark Tech Design System 
+Inspired by sleek AI products with 3D elements and blue accents
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Dark theme base - matching the reference image */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 95%;
+
+    /* Blue accent system - tech/AI product feel */
+    --primary: 214 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 214 100% 70%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 85%;
+
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 214 50% 25%;
+    --accent-foreground: 0 0% 95%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
+    --ring: 214 100% 60%;
+
+    --radius: 0.75rem;
+
+    /* Custom design tokens for PostPilot */
+    --hero-bg: 0 0% 3%;
+    --glass: 0 0% 100% / 0.05;
+    --glass-border: 0 0% 100% / 0.1;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(214 100% 60%), hsl(214 100% 70%));
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 3%) 0%, hsl(0 0% 6%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 6%), hsl(0 0% 8%));
+    --gradient-glow: radial-gradient(circle at center, hsl(214 100% 60% / 0.3) 0%, transparent 70%);
+    
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(214 100% 60% / 0.3);
+    --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 16px 64px hsl(0 0% 0% / 0.6);
+    
+    /* Animations */
+    --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-spring: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 85%;
+    --sidebar-primary: 214 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 85%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 214 100% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Hero Button Variants */
+  .btn-hero {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 
+           shadow-lg hover:shadow-glow transition-all duration-300
+           border border-primary/20 backdrop-blur-sm;
+  }
+  
+  .btn-ghost-hero {
+    @apply bg-transparent text-foreground border border-glass-border
+           hover:bg-glass hover:border-primary/30 backdrop-blur-sm
+           transition-all duration-300;
+  }
+
+  /* Glass Card Effect */
+  .glass-card {
+    @apply bg-card/50 backdrop-blur-xl border border-glass-border
+           shadow-card rounded-xl;
+  }
+
+  /* Animated Underlines */
+  .animated-link {
+    @apply relative after:content-[''] after:absolute after:w-full 
+           after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 
+           after:bg-primary after:origin-bottom-right 
+           after:transition-transform after:duration-300 
+           hover:after:scale-x-100 hover:after:origin-bottom-left;
+  }
+
+  /* Glow Effects */
+  .glow-primary {
+    filter: drop-shadow(0 0 20px hsl(214 100% 60% / 0.5));
+  }
+  
+  .glow-text {
+    text-shadow: 0 0 20px hsl(214 100% 60% / 0.3);
+  }
+
+  /* 3D Perspective */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .transform-3d {
+    transform-style: preserve-3d;
+  }
+}
