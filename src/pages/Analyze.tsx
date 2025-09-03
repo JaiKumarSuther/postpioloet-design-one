@@ -2,6 +2,7 @@ import { useState, useEffect, Suspense } from "react";
 import { CheckCircle, CircleDot, Zap, Globe, Search, Shield, Sparkles, Brain, Cpu, Target } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useLocation, useNavigate } from "react-router-dom";
+import { normalizeUrl } from "@/lib/utils";
 import ThreeBackground from "@/components/ThreeBackground";
 
 interface AnalysisStep {
@@ -73,7 +74,8 @@ const Analyze = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
-  const targetUrl = params.get("url") || "";
+  const targetUrlRaw = params.get("url") || "";
+  const targetUrl = normalizeUrl(targetUrlRaw);
   const hostname = (() => {
     try {
       const u = new URL(targetUrl);

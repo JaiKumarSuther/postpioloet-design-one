@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import ThreeBackground from "@/components/ThreeBackground";
+import { normalizeUrl } from "@/lib/utils";
 
 const BlogWriter = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -26,7 +27,7 @@ const BlogWriter = () => {
     const url = params.get("url");
     if (url) {
       setSelectedOption("website");
-      setWebsiteUrl(url);
+      setWebsiteUrl(normalizeUrl(url));
     }
   }, [location.search]);
 
@@ -66,15 +67,16 @@ const BlogWriter = () => {
 
     setTimeout(() => {
       setIsGenerating(false);
+      const normalized = selectedOption === "website" ? normalizeUrl(websiteUrl) : websiteUrl;
       navigate("/output", {
-        state: { selectedOption, websiteUrl, customTopic, selectedTrend, region, category },
+        state: { selectedOption, websiteUrl: normalized, customTopic, selectedTrend, region, category },
       });
     }, 2000);
   };
 
   const hostname = (() => {
     try {
-      const u = new URL(websiteUrl);
+      const u = new URL(normalizeUrl(websiteUrl));
       return u.hostname.replace("www.", "");
     } catch {
       return websiteUrl;
@@ -98,7 +100,7 @@ const BlogWriter = () => {
       </Suspense>
 
       {/* Subtle animated overlays */}
-      <div className="absolute inset-0 bg-gradient-glow opacity-40"></div>
+      <div className="absolute inset-0 bg-gradient-glow opacity-60"></div>
       <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-primary/10 rounded-full blur-3xl"></div>
 
@@ -185,7 +187,7 @@ const BlogWriter = () => {
           {selectedOption === "website" && (
             <div className="mb-6 animate-slide-in">
               <Label htmlFor="url" className="block mb-2 font-semibold">Website URL</Label>
-              <Input id="url" type="url" placeholder="https://example.com" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="bg-card/40 border border-border hover:border-primary/50 focus:border-primary placeholder:text-muted-foreground" />
+              <Input id="url" type="text" placeholder="example.com or www.example.com" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="bg-card/40 border border-border hover:border-primary/50 focus:border-primary placeholder:text-muted-foreground" />
             </div>
           )}
 

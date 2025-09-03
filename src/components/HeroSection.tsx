@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { normalizeUrl } from '@/lib/utils'
 
 export default function HeroSection() {
   const [blogUrl, setBlogUrl] = useState('')
@@ -12,7 +13,8 @@ export default function HeroSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!blogUrl) return
-    navigate(`/analyze?url=${encodeURIComponent(blogUrl)}`)
+    const normalized = normalizeUrl(blogUrl)
+    navigate(`/analyze?url=${encodeURIComponent(normalized)}`)
   }
 
   return (
@@ -60,7 +62,7 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-2xl mx-auto mb-8 px-4 sm:px-0"
         >
           <Input
-            type="url"
+            type="text"
             placeholder="Enter your blog or website URL"
             value={blogUrl}
             onChange={(e) => setBlogUrl(e.target.value)}
