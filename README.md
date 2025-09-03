@@ -15,6 +15,16 @@ npm install
 npm run dev
 ```
 
+## API base URL
+
+You can configure the backend base URL via an environment variable:
+
+```sh
+VITE_API_BASE_URL=https://postpilotai-be-production.up.railway.app
+```
+
+If not set, the app defaults to the production URL above.
+
 Build and preview production:
 
 ```sh

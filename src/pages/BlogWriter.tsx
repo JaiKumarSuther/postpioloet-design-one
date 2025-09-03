@@ -9,6 +9,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import ThreeBackground from "@/components/ThreeBackground";
 import { normalizeUrl, isValidHttpUrl } from "@/lib/utils";
+import { useGenerateFromUrl, useGenerateFromTopic, usePickTrendingTopic, useTrendingTopics } from "@/hooks/useApi";
+import { useDispatch } from "react-redux";
+import { setParams, setBlog, setTrendData } from "@/store/slices/generationSlice";
+import { mapCategoryToField, mapRegionToApi } from "@/lib/mappers";
 
 const BlogWriter = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -33,18 +37,13 @@ const BlogWriter = () => {
     }
   }, [location.search]);
 
-  const trendingTopics = [
-    "AI in Healthcare Revolution",
-    "Sustainable Technology Trends",
-    "Remote Work Future",
-    "Cryptocurrency Updates",
-    "Climate Change Solutions",
-    "Mental Health Awareness",
-    "E-commerce Innovation",
-    "Digital Marketing 2024",
-    "Cybersecurity Threats",
-    "Green Energy Transition",
-  ];
+  const dispatch = useDispatch();
+  const apiRegion = mapRegionToApi(region);
+  const apiField = mapCategoryToField(category);
+  const { data: trendingData, isLoading: trendingLoading } = useTrendingTopics({ region: apiRegion, field: apiField, limit: 10 });
+  const { mutateAsync: pickTopic } = usePickTrendingTopic();
+  const { mutateAsync: genFromUrl, isPending: genUrlPending } = useGenerateFromUrl();
+  const { mutateAsync: genFromTopic, isPending: genTopicPending } = useGenerateFromTopic();
 
   const onSelectOption = (value: string) => {
     setSelectedOption(value);
@@ -76,7 +75,7 @@ const BlogWriter = () => {
     return false;
   })();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const ok = validate();
     if (!ok) {
       const firstError =
@@ -91,14 +90,34 @@ const BlogWriter = () => {
     }
     toast({ title: "Generating Blog", description: "AI is creating your blog post..." });
     setIsGenerating(true);
+    try {
+      const normalizedUrl = selectedOption === "website" ? normalizeUrl(websiteUrl) : websiteUrl;
+      // Save params in store
+      dispatch(setParams({ selectedOption: selectedOption as any, websiteUrl: normalizedUrl, customTopic, selectedTrend, region, category }));
 
-    setTimeout(() => {
+      if (selectedOption === "website") {
+        const res = await genFromUrl({ url: normalizedUrl!, region: apiRegion, field: apiField, auto_publish: false });
+        dispatch(setBlog(res.data));
+        if (res.trend_data) dispatch(setTrendData({ topic: res.trend_data.topic, keywords: res.trend_data.keywords }));
+      } else if (selectedOption === "custom") {
+        const res = await genFromTopic({ topic: customTopic, region: apiRegion, field: apiField, auto_publish: false });
+        dispatch(setBlog(res.data));
+        if (res.trend_data) dispatch(setTrendData({ topic: res.trend_data.topic, keywords: res.trend_data.keywords }));
+      } else if (selectedOption === "trending") {
+        // If trend picked from server list, use selectedTrend; otherwise request one
+        const topic = selectedTrend || (await pickTopic({ region: apiRegion, field: apiField })).data.topic;
+        const res = await genFromTopic({ topic, region: apiRegion, field: apiField, auto_publish: false });
+        dispatch(setParams({ selectedOption: "trending", selectedTrend: topic, websiteUrl: "", customTopic: "", region, category }));
+        dispatch(setBlog(res.data));
+        if (res.trend_data) dispatch(setTrendData({ topic: res.trend_data.topic, keywords: res.trend_data.keywords }));
+      }
+
+      navigate("/output");
+    } catch (e: any) {
+      toast({ title: "Generation failed", description: e?.message ?? "Please try again.", variant: "destructive" });
+    } finally {
       setIsGenerating(false);
-      const normalized = selectedOption === "website" ? normalizeUrl(websiteUrl) : websiteUrl;
-      navigate("/output", {
-        state: { selectedOption, websiteUrl: normalized, customTopic, selectedTrend, region, category },
-      });
-    }, 2000);
+    }
   };
 
   const hostname = (() => {
@@ -247,7 +266,7 @@ const BlogWriter = () => {
             <div className="mb-6 animate-slide-in">
               <Label className="block mb-4 font-semibold">Top 10 Trending Topics</Label>
               <div className="grid md:grid-cols-2 gap-3">
-                {trendingTopics.map((topic, index) => {
+                {(trendingData?.topics ?? []).map((topic, index) => {
                   const active = selectedTrend === topic;
                   return (
                     <button
@@ -262,6 +281,7 @@ const BlogWriter = () => {
                 })}
               </div>
               {errors.selectedTrend && <p className="mt-3 text-sm text-destructive">{errors.selectedTrend}</p>}
+              {trendingLoading && <p className="mt-3 text-sm text-muted-foreground">Loading trending topics…</p>}
             </div>
           )}
 
@@ -301,8 +321,8 @@ const BlogWriter = () => {
             </div>
           </div>
 
-          <Button onClick={handleSubmit} disabled={isGenerating || !canSubmit} className={`w-full button-gradient text-lg py-6 rounded-lg font-semibold text-primary-foreground transition-all ${isGenerating || !canSubmit ? "opacity-80 cursor-not-allowed" : "hover:scale-105"}`}>
-            {isGenerating ? "Generating..." : "Generate Blog Post"} {!isGenerating && <ArrowRight className="w-5 h-5 ml-2" />}
+          <Button onClick={handleSubmit} disabled={isGenerating || !canSubmit || genUrlPending || genTopicPending} className={`w-full button-gradient text-lg py-6 rounded-lg font-semibold text-primary-foreground transition-all ${(isGenerating || !canSubmit || genUrlPending || genTopicPending) ? "opacity-80 cursor-not-allowed" : "hover:scale-105"}`}>
+            {isGenerating || genUrlPending || genTopicPending ? "Generating..." : "Generate Blog Post"} {!isGenerating && !genUrlPending && !genTopicPending && <ArrowRight className="w-5 h-5 ml-2" />}
           </Button>
         </div>
       </div>

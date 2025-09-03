@@ -8,7 +8,10 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
+import { usePublishPost } from "@/hooks/useApi";
 
 const Output = () => {
   const location = useLocation();
@@ -18,60 +21,19 @@ const Output = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const { blog, params } = useSelector((s: RootState) => s.generation);
+  const { mutateAsync: publish, isPending: isPublishing } = usePublishPost();
 
-  const blogContent = `# The Future of AI in Content Creation: Transforming Digital Marketing
-
-In today's rapidly evolving digital landscape, artificial intelligence has emerged as a game-changing force in content creation. As businesses struggle to maintain consistent, high-quality content output, AI-powered solutions are revolutionizing how we approach blogging, social media, and digital marketing strategies.
-
-## The Rise of AI Content Creation
-
-The integration of AI in content creation isn't just a trend—it's a fundamental shift in how we produce and consume digital content. With advanced natural language processing capabilities, AI can now generate human-like content that engages audiences while maintaining authenticity and relevance.
-
-### Key Benefits of AI Content Creation:
-
-- **Scalability**: Generate multiple pieces of content simultaneously
-- **Consistency**: Maintain brand voice across all platforms
-- **SEO Optimization**: Automatically incorporate relevant keywords
-- **Time Efficiency**: Reduce content creation time by up to 80%
-- **Data-Driven Insights**: Leverage analytics for better performance
-
-## Transforming Business Workflows
-
-Modern businesses are discovering that AI content creation tools can significantly streamline their marketing workflows. From blog posts to social media updates, AI can handle routine content tasks while allowing human creators to focus on strategy and creativity.
-
-The technology behind these tools continues to advance, offering more sophisticated understanding of context, tone, and audience preferences. This evolution means that AI-generated content is becoming increasingly indistinguishable from human-written material.
-
-## Best Practices for AI Content Implementation
-
-To maximize the benefits of AI content creation, businesses should consider the following strategies:
-
-1. **Define Clear Guidelines**: Establish brand voice and content standards
-2. **Human Oversight**: Always review and edit AI-generated content
-3. **Audience Testing**: Continuously test content performance with your audience
-4. **Integration Strategy**: Seamlessly blend AI tools with existing workflows
-
-## The Future Outlook
-
-As we look ahead, the future of AI in content creation appears incredibly promising. Emerging technologies will likely bring even more sophisticated capabilities, including better emotional intelligence, cultural awareness, and personalization features.
-
-The businesses that embrace these tools today will have a significant competitive advantage tomorrow. By investing in AI content creation now, companies can build scalable content strategies that grow with their business needs.
-
-## Conclusion
-
-AI content creation represents a paradigm shift in how we approach digital marketing and content strategy. While the technology continues to evolve, its current capabilities already offer substantial benefits for businesses looking to scale their content efforts efficiently.
-
-The key to success lies in finding the right balance between AI automation and human creativity. By leveraging the strengths of both, businesses can create compelling, authentic content that resonates with their audiences while maintaining operational efficiency.
-
-*This blog post was generated using advanced AI technology, demonstrating the quality and coherence possible with modern content creation tools.*`;
+  const blogContent = useMemo(() => (blog?.content ? blog.content : ""), [blog]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(blogContent);
+    navigator.clipboard.writeText(blogContent || "");
     toast({ title: "Copied to Clipboard", description: "Blog content has been copied to your clipboard." });
   };
 
   const handleDownload = () => {
     const element = document.createElement("a");
-    const file = new Blob([blogContent], { type: "text/plain" });
+    const file = new Blob([blogContent || ""], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
     element.download = "ai-generated-blog.txt";
     document.body.appendChild(element);
@@ -95,8 +57,17 @@ The key to success lies in finding the right balance between AI automation and h
     setConfirmOpen(true);
   };
 
-  const handleSendToWebsite = () => {
-    toast({ title: "Sending to Website", description: "Content is being sent to your website CMS." });
+  const handleSendToWebsite = async () => {
+    if (!blog) {
+      toast({ title: "No content", description: "Please generate a blog first.", variant: "destructive" });
+      return;
+    }
+    try {
+      await publish(blog);
+      toast({ title: "Published", description: "Post published successfully." });
+    } catch (e: any) {
+      toast({ title: "Publish failed", description: e?.message ?? "Please try again.", variant: "destructive" });
+    }
   };
 
   const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
@@ -138,7 +109,7 @@ The key to success lies in finding the right balance between AI automation and h
           </Button>
         </div>
 
-        {state && (
+        {params && (
           <div className="card-gradient rounded-xl p-6 mb-8 animate-fade-in shadow-glow">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-5 h-5 text-primary" />
@@ -148,39 +119,39 @@ The key to success lies in finding the right balance between AI automation and h
               <div>
                 <span className="text-muted-foreground">Method:</span>
                 <div className="font-medium capitalize">
-                  {state.selectedOption === "website" && "Website Analysis"}
-                  {state.selectedOption === "custom" && "Custom Topic"}
-                  {state.selectedOption === "trending" && "Trending Topic"}
+                  {params.selectedOption === "website" && "Website Analysis"}
+                  {params.selectedOption === "custom" && "Custom Topic"}
+                  {params.selectedOption === "trending" && "Trending Topic"}
                 </div>
               </div>
-              {state.websiteUrl && (
+              {params.websiteUrl && (
                 <div>
                   <span className="text-muted-foreground">Source URL:</span>
-                  <div className="font-medium truncate">{state.websiteUrl}</div>
+                  <div className="font-medium truncate">{params.websiteUrl}</div>
                 </div>
               )}
-              {state.customTopic && (
+              {params.customTopic && (
                 <div>
                   <span className="text-muted-foreground">Topic:</span>
-                  <div className="font-medium">{state.customTopic}</div>
+                  <div className="font-medium">{params.customTopic}</div>
                 </div>
               )}
-              {state.selectedTrend && (
+              {params.selectedTrend && (
                 <div>
                   <span className="text-muted-foreground">Trending Topic:</span>
-                  <div className="font-medium">{state.selectedTrend}</div>
+                  <div className="font-medium">{params.selectedTrend}</div>
                 </div>
               )}
-              {state.category && (
+              {params.category && (
                 <div>
                   <span className="text-muted-foreground">Category:</span>
-                  <div className="font-medium">{state.category}</div>
+                  <div className="font-medium">{params.category}</div>
                 </div>
               )}
-              {state.region && (
+              {params.region && (
                 <div>
                   <span className="text-muted-foreground">Region:</span>
-                  <div className="font-medium">{state.region}</div>
+                  <div className="font-medium">{params.region}</div>
                 </div>
               )}
             </div>
@@ -191,7 +162,11 @@ The key to success lies in finding the right balance between AI automation and h
           <div className="lg:col-span-3">
             <div className="card-gradient rounded-2xl p-8 animate-fade-in shadow-glow">
               <div className="prose prose-invert max-w-none">
-                <div className="text-foreground leading-relaxed" style={{ whiteSpace: 'pre-line' }}>{blogContent}</div>
+                {blogContent ? (
+                  <div className="text-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: blogContent }} />
+                ) : (
+                  <div className="text-muted-foreground">No content generated yet.</div>
+                )}
               </div>
             </div>
           </div>
@@ -208,9 +183,9 @@ The key to success lies in finding the right balance between AI automation and h
                   <Download className="w-4 h-4 mr-2" />
                   Download as .txt
                 </Button>
-                <Button onClick={handleSendToWebsite} variant="outline" className="w-full justify-start border-border hover:border-primary hover:bg-primary/10">
+                <Button onClick={handleSendToWebsite} variant="outline" disabled={isPublishing || !blog} className="w-full justify-start border-border hover:border-primary hover:bg-primary/10 disabled:opacity-60">
                   <Send className="w-4 h-4 mr-2" />
-                  Send to Website
+                  {isPublishing ? "Publishing..." : "Send to Website"}
                 </Button>
               </div>
 
