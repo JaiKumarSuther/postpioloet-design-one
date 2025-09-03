@@ -2,6 +2,8 @@ import { useLocation, Link } from "react-router-dom";
 import { Copy, Download, Send, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Suspense } from "react";
+import ThreeBackground from "@/components/ThreeBackground";
 
 const Output = () => {
   const location = useLocation();
@@ -79,8 +81,13 @@ The key to success lies in finding the right balance between AI automation and h
 
   return (
     <div className="min-h-screen relative overflow-hidden pt-20 pb-16">
-      {/* Subtle background */}
-      <div className="absolute inset-0 bg-gradient-glow opacity-40"></div>
+      {/* Animated Three.js background */}
+      <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
+        <ThreeBackground />
+      </Suspense>
+
+      {/* Subtle overlays */}
+      <div className="absolute inset-0 bg-gradient-glow opacity-60"></div>
       <div className="absolute -top-28 -left-28 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-purple-primary/10 rounded-full blur-3xl"></div>
 
@@ -197,7 +204,6 @@ The key to success lies in finding the right balance between AI automation and h
         </div>
       </div>
 
-      {/* Floating helper badge */}
       <div className="hidden md:flex items-center gap-2 fixed bottom-6 right-6 px-3 py-2 rounded-full bg-primary/15 text-primary text-xs shadow-glow">
         <Sparkles className="w-4 h-4" /> Tip: Use the buttons on the right to export
       </div>

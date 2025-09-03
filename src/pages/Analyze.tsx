@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { CheckCircle, CircleDot, Zap, Globe, Search, Shield, Sparkles, Brain, Cpu, Target } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useLocation, useNavigate } from "react-router-dom";
+import ThreeBackground from "@/components/ThreeBackground";
 
 interface AnalysisStep {
   id: string;
@@ -117,7 +118,6 @@ const Analyze = () => {
       const finalTimeout = setTimeout(() => {
         setProgress(100);
         setIsCompleted(true);
-        // Navigate to blog writer after a short delay, preserving URL
         const qs = targetUrl ? `?url=${encodeURIComponent(targetUrl)}` : "";
         navigate(`/blog-writer${qs}`);
       }, 600);
@@ -128,15 +128,20 @@ const Analyze = () => {
   const currentStepData = analysisSteps[currentStep];
 
   return (
-    <div className="min-h-[80vh] bg-black relative overflow-hidden flex items-center justify-center p-3 md:p-4">
-      <div className="absolute inset-0 bg-gradient-glow"></div>
+    <div className="min-h-[80vh] relative overflow-hidden flex items-center justify-center p-3 md:p-4">
+      {/* Animated Three.js background */}
+      <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}> 
+        <ThreeBackground />
+      </Suspense>
+
+      <div className="absolute inset-0 bg-gradient-glow opacity-30"></div>
       <div className="absolute inset-0 bg-gradient-mesh opacity-20"></div>
 
       {Array.from({ length: 8 }).map((_, i) => (
         <FloatingParticle key={i} delay={i * 0.6} />
       ))}
 
-      <div className="relative w-full max-w-3xl">
+      <div className="relative w-full max-w-3xl opacity-60">
         <div className="absolute -top-16 -left-16 w-28 h-28 bg-purple-primary/15 rounded-full blur-3xl animate-pulse-glow"></div>
         <div className="absolute -bottom-16 -right-16 w-40 h-40 bg-purple-secondary/10 rounded-full blur-3xl animate-float"></div>
 
@@ -183,7 +188,7 @@ const Analyze = () => {
                 <div className="flex items-center gap-4 md:gap-5 mb-4 md:mb-5">
                   <div className={`relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br ${currentStepData.color} rounded-xl md:rounded-2xl shadow-purple-intense animate-pulse-glow`}>
                     <currentStepData.icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                    <div className="absolute inset-0 bg-white/20 rounded-xl md:rounded-2xl blur-sm"></div>
+                    <div className="absolute inset-0 bg-white/20 rounded-2xl blur-sm"></div>
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl md:text-2xl font-bold text-foreground mb-1">{currentStepData.label}</h3>

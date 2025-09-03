@@ -18,7 +18,7 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-hero opacity-90" />
+      <div className="absolute inset-0" />
       
       {/* Content */}
       <div className="relative z-10 max-w-4xl mx-auto text-center">
@@ -46,7 +46,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4 sm:px-0"
+          className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4 sm:px-0 text-white"
         >
           PostPilot AI automates topic research, keyword strategy, SEO-optimized writing, 
           and auto-publishes to WordPress—so you post consistently and rank faster.
@@ -88,7 +88,6 @@ export default function HeroSection() {
             <div className="w-2 h-2 bg-primary rounded-full animate-glow-pulse"></div>
             <span>No credit card required</span>
           </div>
-          <div className="hidden sm:block w-1 h-1 bg-muted-foreground/30 rounded-full"></div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-primary rounded-full animate-glow-pulse" style={{ animationDelay: '0.5s' }}></div>
             <span>Setup in under 5 minutes</span>
