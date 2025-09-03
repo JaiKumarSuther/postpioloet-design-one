@@ -129,7 +129,12 @@ export default function AnalyzeModal({ open, onOpenChange, targetUrl, onComplete
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-gradient-card border border-purple-primary/20 shadow-purple-glow">
+      <DialogContent
+        className="max-w-2xl bg-gradient-card border border-purple-primary/20 shadow-purple-glow [&>button]:hidden"
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <div className="text-center mb-4">
           <div className="relative inline-flex items-center justify-center mb-3">
             <div className="relative w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center shadow-purple-intense">
