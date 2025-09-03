@@ -3,14 +3,16 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ArrowRight, Sparkles } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function HeroSection() {
   const [blogUrl, setBlogUrl] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log('Blog URL:', blogUrl)
+    if (!blogUrl) return
+    navigate(`/analyze?url=${encodeURIComponent(blogUrl)}`)
   }
 
   return (
