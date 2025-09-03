@@ -74,7 +74,7 @@ export default function PricingSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 items-stretch max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -82,22 +82,22 @@ export default function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.2 }}
               viewport={{ once: true }}
-              className={`relative group ${plan.popular ? 'scale-105' : ''}`}
+              className={`relative group h-full`}
             >
               {/* Popular badge */}
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                  <div className="bg-gradient-primary px-6 py-2 rounded-full text-primary-foreground text-sm font-semibold flex items-center gap-2 shadow-glow">
+                  <div className="bg-gradient-primary px-2 py-2 rounded-full text-primary-foreground text-sm font-semibold flex items-center gap-2 shadow-glow">
                     <Star className="w-4 h-4" />
                     Most Popular
                   </div>
                 </div>
               )}
 
-              <div className={`glass-card p-8 h-full transition-all duration-500 ${
+              <div className={`glass-card p-8 h-full flex flex-col transition-all duration-500 ${
                 plan.popular 
                   ? 'border-primary/30 shadow-elevated hover:shadow-glow' 
-                  : 'hover:shadow-elevated hover:scale-[1.02]'
+                  : 'hover:shadow-elevated'
               }`}>
                 {/* Plan header */}
                 <div className="mb-8">
@@ -134,7 +134,7 @@ export default function PricingSection() {
                 {/* CTA Button */}
                 <Button 
                   variant={plan.popular ? "hero" : "ghost-hero"}
-                  className={`w-full h-12 font-semibold transition-all duration-300 ${
+                  className={`w-full h-12 font-semibold mt-auto transition-all duration-300 ${
                     plan.popular && 'shadow-glow'
                   }`}
                 >

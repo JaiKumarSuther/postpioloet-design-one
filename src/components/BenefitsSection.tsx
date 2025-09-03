@@ -135,25 +135,7 @@ export default function BenefitsSection() {
           </div>
         </motion.div>
 
-        {/* Animated counter section */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
-        >
-          <div className="text-6xl md:text-8xl font-bold mb-4">
-            <motion.span 
-              className="text-primary glow-text"
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              0%
-            </motion.span>
-          </div>
-          <p className="text-xl text-muted-foreground">human effort required</p>
-        </motion.div>
+     
       </div>
     </section>
   )

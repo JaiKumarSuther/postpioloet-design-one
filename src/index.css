@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* PostPilot AI - Dark Tech Design System 
-Inspired by sleek AI products with 3D elements and blue accents
+Inspired by sleek AI products with 3D elements and purple accents
 All colors MUST be HSL.
 */
 
@@ -19,10 +19,10 @@ All colors MUST be HSL.
     --popover: 0 0% 6%;
     --popover-foreground: 0 0% 95%;
 
-    /* Blue accent system - tech/AI product feel */
-    --primary: 214 100% 60%;
+    /* Purple accent system - brand-driven */
+    --primary: 270 80% 66%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 214 100% 70%;
+    --primary-glow: 272 88% 72%;
 
     --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 85%;
@@ -30,7 +30,7 @@ All colors MUST be HSL.
     --muted: 0 0% 8%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 214 50% 25%;
+    --accent: 272 50% 28%;
     --accent-foreground: 0 0% 95%;
 
     --destructive: 0 84% 60%;
@@ -38,7 +38,7 @@ All colors MUST be HSL.
 
     --border: 0 0% 15%;
     --input: 0 0% 12%;
-    --ring: 214 100% 60%;
+    --ring: 270 80% 66%;
 
     --radius: 0.75rem;
 
@@ -48,13 +48,13 @@ All colors MUST be HSL.
     --glass-border: 0 0% 100% / 0.1;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(214 100% 60%), hsl(214 100% 70%));
+    --gradient-primary: linear-gradient(135deg, hsl(270 80% 66%), hsl(280 85% 72%));
     --gradient-hero: linear-gradient(180deg, hsl(0 0% 3%) 0%, hsl(0 0% 6%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 6%), hsl(0 0% 8%));
-    --gradient-glow: radial-gradient(circle at center, hsl(214 100% 60% / 0.3) 0%, transparent 70%);
+    --gradient-glow: radial-gradient(circle at center, hsl(270 80% 66% / 0.3) 0%, transparent 70%);
     
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(214 100% 60% / 0.3);
+    --shadow-glow: 0 0 40px hsl(270 80% 66% / 0.3);
     --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.4);
     --shadow-elevated: 0 16px 64px hsl(0 0% 0% / 0.6);
     
@@ -64,12 +64,12 @@ All colors MUST be HSL.
 
     --sidebar-background: 0 0% 5%;
     --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: 214 100% 60%;
+    --sidebar-primary: 270 80% 66%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 85%;
     --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 214 100% 60%;
+    --sidebar-ring: 270 80% 66%;
   }
 }
 
@@ -119,11 +119,11 @@ All colors MUST be HSL.
 
   /* Glow Effects */
   .glow-primary {
-    filter: drop-shadow(0 0 20px hsl(214 100% 60% / 0.5));
+    filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.5));
   }
   
   .glow-text {
-    text-shadow: 0 0 20px hsl(214 100% 60% / 0.3);
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.3);
   }
 
   /* 3D Perspective */
