@@ -75,6 +75,7 @@ const Analyze = () => {
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const targetUrlRaw = params.get("url") || "";
+  const redirect = params.get("redirect") || "blog-writer";
   const targetUrl = normalizeUrl(targetUrlRaw);
   const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
   const hostname = (() => {
@@ -121,8 +122,12 @@ const Analyze = () => {
       const finalTimeout = setTimeout(() => {
         setProgress(100);
         setIsCompleted(true);
-        const qs = targetUrl ? `?url=${encodeURIComponent(targetUrl)}` : "";
-        navigate(`/blog-writer${qs}`);
+        // Keep backwards compatibility but modal is preferred now
+        const qsParts: string[] = [];
+        if (targetUrl) qsParts.push(`url=${encodeURIComponent(targetUrl)}`);
+        const qs = qsParts.length ? `?${qsParts.join("&")}` : "";
+        const targetPath = redirect === "output" ? "/output" : "/blog-writer";
+        navigate(`${targetPath}${qs}`);
       }, 600);
       return () => clearTimeout(finalTimeout);
     }

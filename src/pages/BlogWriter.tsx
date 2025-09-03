@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import ThreeBackground from "@/components/ThreeBackground";
+import AnalyzeModal from "@/components/AnalyzeModal";
 import { normalizeUrl, isValidHttpUrl } from "@/lib/utils";
 import { useGenerateFromUrl, useGenerateFromTopic, usePickTrendingTopic, useTrendingTopics } from "@/hooks/useApi";
 import { useDispatch } from "react-redux";
@@ -22,6 +23,7 @@ const BlogWriter = () => {
   const [region, setRegion] = useState("");
   const [category, setCategory] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAnalyze, setShowAnalyze] = useState(false);
   const [errors, setErrors] = useState<{ selectedOption?: string; websiteUrl?: string; customTopic?: string; selectedTrend?: string }>({});
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -90,6 +92,7 @@ const BlogWriter = () => {
     }
     toast({ title: "Generating Blog", description: "AI is creating your blog post..." });
     setIsGenerating(true);
+    setShowAnalyze(true);
     try {
       const normalizedUrl = selectedOption === "website" ? normalizeUrl(websiteUrl) : websiteUrl;
       // Save params in store
@@ -112,6 +115,8 @@ const BlogWriter = () => {
         if (res.trend_data) dispatch(setTrendData({ topic: res.trend_data.topic, keywords: res.trend_data.keywords }));
       }
 
+      // After generation completes, close modal and navigate to output
+      setShowAnalyze(false);
       navigate("/output");
     } catch (e: any) {
       toast({ title: "Generation failed", description: e?.message ?? "Please try again.", variant: "destructive" });
@@ -326,6 +331,14 @@ const BlogWriter = () => {
           </Button>
         </div>
       </div>
+      <AnalyzeModal
+        open={showAnalyze}
+        onOpenChange={setShowAnalyze}
+        targetUrl={selectedOption === "website" ? websiteUrl : undefined}
+        onCompleted={() => {
+          // If generation already finished, we will navigate in try block; otherwise keep modal until done
+        }}
+      />
     </div>
   );
 };

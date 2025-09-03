@@ -21,7 +21,7 @@ export default function HeroSection() {
       return
     }
     const normalized = normalizeUrl(blogUrl)
-    navigate(`/analyze?url=${encodeURIComponent(normalized)}`)
+    navigate(`/blog-writer?url=${encodeURIComponent(normalized)}`)
   }
 
   const canSubmit = blogUrl.trim().length > 0 && isValidHttpUrl(blogUrl)
