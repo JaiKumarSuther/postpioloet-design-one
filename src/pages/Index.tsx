@@ -8,7 +8,21 @@ import FAQSection from '@/components/FAQSection'
 
 const Index = () => {
   return (
-    <main className="relative">
+    <>
+      {/* Header with logo */}
+      <header className="sticky top-0 z-50 bg-background/60 backdrop-blur border-b border-glass-border">
+        <div className="max-w-6xl mx-auto px-6 py-3">
+          <a href="/" className="flex items-center gap-3">
+            <img
+              src="/assets/postpilot-logo.png"
+              alt="PostPilot AI logo"
+              className="w-40 rounded-md"
+            />
+          </a>
+        </div>
+      </header>
+
+      <main className="relative">
       {/* Three.js Background */}
       <Suspense fallback={<div className="fixed inset-0 bg-background -z-10" />}>
         <ThreeBackground />
@@ -45,6 +59,7 @@ const Index = () => {
         </div>
       </footer>
     </main>
+    </>
   );
 };
 

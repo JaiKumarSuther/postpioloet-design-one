@@ -2,53 +2,66 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Check, Star, Zap } from 'lucide-react'
 
-const plans = [
+type Plan = {
+  name: string
+  price: string
+  features: string[]
+  popular: boolean
+  cta: string
+  description?: string
+}
+
+const plans: Plan[] = [
   {
     name: "Starter",
-    price: "$29",
-    period: "/month",
-    description: "Perfect for solo creators and small blogs",
+    price: "$15 / month",
     features: [
-      "10 AI-generated posts per month",
-      "Basic keyword research",
-      "WordPress publishing",
-      "Email support",
-      "SEO optimization"
+      "1 Website connected",
+      "5 posts/week (~20/month)",
+      "SEO keyword research",
+      "Auto-publish to WordPress",
+      "Email support (48h response)"
     ],
     popular: false,
     cta: "Start Free Trial"
   },
   {
-    name: "Professional",
-    price: "$79", 
-    period: "/month",
-    description: "Ideal for growing businesses and agencies",
+    name: "Growth",
+    price: "$50 / month",
     features: [
-      "50 AI-generated posts per month",
-      "Advanced keyword research",
-      "Multi-site WordPress publishing",
-      "Priority support",
-      "Custom content templates",
-      "Analytics & reporting",
-      "API access"
+      "Up to 3 Websites",
+      "15 posts/week (~60/month)",
+      "Advanced SEO optimization",
+      "Images & metadata included",
+      "Priority support (24h response)",
+      "Monthly performance summary"
     ],
     popular: true,
     cta: "Start Free Trial"
   },
   {
-    name: "Enterprise",
-    price: "$199",
-    period: "/month", 
-    description: "For large teams and high-volume content",
+    name: "Agency",
+    price: "$120 / month",
     features: [
-      "Unlimited AI-generated posts",
-      "White-label solution",
-      "Custom integrations",
+      "Up to 10 Websites",
+      "40 posts/week (~160/month)",
+      "AI topic clustering & series",
+      "White-label option",
+      "Dedicated onboarding & setup",
+      "Priority Slack/WhatsApp support"
+    ],
+    popular: false,
+    cta: "Start Free Trial"
+  },
+  {
+    name: "Enterprise",
+    price: "Contact us",
+    features: [
+      "Unlimited websites",
+      "100+ posts/week (custom)",
+      "Multi-CMS integration (Webflow, Ghost, Shopify Blog, etc.)",
       "Dedicated account manager",
-      "Advanced analytics",
-      "Custom workflows",
-      "SLA guarantee",
-      "Team collaboration tools"
+      "API access & SLA guarantees"
     ],
     popular: false,
     cta: "Contact Sales"
@@ -58,7 +71,7 @@ const plans = [
 export default function PricingSection() {
   return (
     <section className="py-24 px-6 relative">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -74,7 +87,7 @@ export default function PricingSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 items-stretch max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -102,13 +115,13 @@ export default function PricingSection() {
                 {/* Plan header */}
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{plan.description}</p>
-                  
+                  {plan.description && (
+                    <p className="text-muted-foreground text-sm mb-4">{plan.description}</p>
+                  )}
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl md:text-5xl font-bold text-primary">
+                    <span className="text-3xl md:text-4xl font-bold text-primary">
                       {plan.price}
                     </span>
-                    <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                 </div>
 

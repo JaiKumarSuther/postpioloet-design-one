@@ -34,7 +34,7 @@ const benefits = [
 
 export default function BenefitsSection() {
   return (
-    <section className="py-24 px-6 relative">
+    <section className="px-6 relative">
       {/* Background glow effect */}
       <div className="absolute inset-0 bg-gradient-glow opacity-20 blur-3xl" />
       

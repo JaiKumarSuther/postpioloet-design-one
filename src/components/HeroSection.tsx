@@ -26,17 +26,14 @@ export default function HeroSection() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="mb-6"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm text-muted-foreground">AI-Powered Content Creation</span>
-          </div>
+          
         </motion.div>
 
         <motion.h1 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 leading-tight"
         >
           <span className="glow-text">AI Blog Writer</span> that{' '}
           <span className="text-primary">Researches, Writes</span>{' '}
@@ -47,7 +44,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
+          className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4 sm:px-0"
         >
           PostPilot AI automates topic research, keyword strategy, SEO-optimized writing, 
           and auto-publishes to WordPress—so you post consistently and rank faster.
@@ -58,24 +55,24 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
           onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto mb-8"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-2xl mx-auto mb-8 px-4 sm:px-0"
         >
           <Input
             type="url"
             placeholder="Enter your blog or website URL"
             value={blogUrl}
             onChange={(e) => setBlogUrl(e.target.value)}
-            className="flex-1 h-14 text-lg glass-card border-glass-border bg-card/50 backdrop-blur-xl"
+            className="flex-1 h-12 sm:h-14 text-base sm:text-lg glass-card border-glass-border bg-card/50 backdrop-blur-xl focus:border-primary/50 transition-all duration-300"
             required
           />
           <Button 
             type="submit" 
             variant="hero"
             size="lg"
-            className="h-14 px-8 text-lg font-semibold group"
+            className="h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg font-semibold group whitespace-nowrap"
           >
             Get Started
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="ml-2 w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform" />
           </Button>
         </motion.form>
 
